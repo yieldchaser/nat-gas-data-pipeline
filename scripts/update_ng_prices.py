@@ -2,6 +2,36 @@ import os
 import yfinance as yf
 import pandas as pd
 
+
+def compute_rolling_average(df, window=7, price_col='Close'):
+    """Return a copy of df with a rolling average column added.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing at least the column specified by price_col.
+    window : int
+        Number of periods to include in the rolling window (default: 7).
+    price_col : str
+        Name of the column containing price values (default: 'Close').
+
+    Returns
+    -------
+    pd.DataFrame
+        Copy of df with a new column named f'{price_col}_MA{window}'.
+    """
+    if price_col not in df.columns:
+        raise ValueError(f"Column '{price_col}' not found in DataFrame.")
+    if window < 1:
+        raise ValueError(f"Window must be a positive integer, got {window}.")
+
+    result = df.copy()
+    result[f'{price_col}_MA{window}'] = (
+        result[price_col].rolling(window=window, min_periods=1).mean()
+    )
+    return result
+
+
 def main():
     ticker = 'NG=F'
     start_date = '2015-01-01'
